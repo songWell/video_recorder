@@ -1,0 +1,9 @@
+<launch>
+    <!-- Subscribed topics -->
+    <arg name="dir_path"  default="./data" />
+    <node pkg="video_recorder" type="video_recorder" name="video_recorder"  output="screen" required="true" clear_params="true">
+        <param name="fps" type="double" value= "15" />
+        <param name="topic" type="string" value="/rgb/image_raw" />
+        <param name="path" type="string" value= "$(arg dir_path)" />
+    </node>
+</launch>

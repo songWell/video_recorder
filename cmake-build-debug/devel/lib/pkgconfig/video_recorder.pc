@@ -1,0 +1,8 @@
+prefix=/songfangjing/works/point_cloud_transport_ws/src/video_recorder/cmake-build-debug/devel
+
+Name: video_recorder
+Description: Description of video_recorder
+Version: 0.1.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
