@@ -62,11 +62,13 @@ int main(int argc, char** argv)
     int count = 1;
 //    ros::Duration(1).sleep();
 
+    std::cout<<"waiting for image subscriber"<<std::endl;
     while(ros::ok()){
         auto num_subscriber = pub_image.getNumSubscribers();
         if(num_subscriber>0)
             break;
     }
+    std::cout<<"start image publish"<<std::endl;
     while(ros::ok()){
         cv::Mat frame;
         if(!cap.read(frame)){
@@ -91,4 +93,5 @@ int main(int argc, char** argv)
     }
 
     ros::spin();
+
 }

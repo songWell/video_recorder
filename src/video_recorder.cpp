@@ -53,7 +53,6 @@ int total_msgs_number, current_msgs_number;
 bool lidar_bag_opened = false;
 bool imu_bag_opened = false;
 rosbag::Bag point_cloud_comp_bag, imu_bag;
-;
 
 bool mkdir_if_not_exist(const std::string& dir_path){
     struct stat info;
@@ -83,6 +82,18 @@ void callback(const sensor_msgs::ImageConstPtr& image_msg)
 
         {
             try {
+                imu_bag.open(imu_bag_path, rosbag::bagmode::Write);
+            }
+            catch (rosbag::BagException e) {
+                ROS_ERROR("Error writing: %s", e.what());
+                ros::shutdown();
+            }
+            ROS_INFO("Recording to %s.", imu_bag_path.c_str());
+            imu_bag_opened = true;
+        }
+
+        {
+            try {
                 point_cloud_comp_bag.open(bag_path, rosbag::bagmode::Write);
             }
             catch (rosbag::BagException e) {
@@ -94,21 +105,9 @@ void callback(const sensor_msgs::ImageConstPtr& image_msg)
         }
 
 
-        {
-            try {
-                imu_bag.open(imu_bag_path, rosbag::bagmode::Write);
-            }
-            catch (rosbag::BagException e) {
-                ROS_ERROR("Error writing: %s", e.what());
-                ros::shutdown();
-            }
-            ROS_INFO("Recording to %s.", imu_bag_path.c_str());
-            imu_bag_opened = true;
-        }
-
         cv::Size size(image_msg->width, image_msg->height);
 //        total_msgs_number = fps * 60 * 5; // 5 minute msgs
-        total_msgs_number = fps  * 5; // 5 minute msgs
+        total_msgs_number = fps * 60  * 5; // 5 minute msgs
         current_msgs_number = 1;
 
         outputVideo.open(filename,
@@ -145,10 +144,12 @@ void callback(const sensor_msgs::ImageConstPtr& image_msg)
             if(current_msgs_number>=total_msgs_number){
                 outFile.close();
                 outputVideo.release();
-                lidar_bag_opened = false;
+
                 point_cloud_comp_bag.close();
-                imu_bag_opened = false;
+                lidar_bag_opened = false;
+
                 imu_bag.close();
+                imu_bag_opened = false;
 
             }
             current_msgs_number++;
@@ -171,7 +172,7 @@ void poinc_cloud_callback(const draco_point_cloud_transport::CompressedPointClou
 
 void imu_callback(const sensor_msgs::ImuPtr& imu_msg){
     if(imu_bag_opened){
-        imu_bag.write("/imu", imu_msg->header.stamp, imu_msg);
+        imu_bag.write("/imu/data", imu_msg->header.stamp, imu_msg);
     }
     return;
 

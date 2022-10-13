@@ -1,0 +1,25 @@
+<launch>
+    <!-- Subscribed topics -->
+    <arg name="dir_path"  default="./data" />
+    <param name="record/topic" type="string" value= "/rslidar_points" />
+    <param name="/point_cloud_compress/draco/quantization_POSITION" type="int" value="16" />
+    <param name="/point_cloud_compress/draco/quantization_GENERIC" type="int" value="32" />
+<!--     <param name="/point_cloud_compress/draco/encode_method" type="int" value="2" /> -->
+
+
+    <include file="$(find point_cloud_recorder)/launch/point_cloud_recorder.launch">
+    </include>
+
+
+<!--     <param name="use_sim_true" value="true" /> -->
+
+<!--     <node pkg="rosbag" type="record" name="bag_record" output="screen" required="true" args="/imu/data /point_cloud_compress/draco -O $(arg dir_path)/lidar_comp_imu.bag"/> -->
+
+
+
+    <node pkg="video_recorder" type="video_recorder" name="video_recorder"  output="screen" required="true">
+        <param name="fps" type="double" value= "15" />
+        <param name="topic" type="string" value="/rgb/image_raw" />
+        <param name="path" type="string" value= "$(arg dir_path)" />
+    </node>
+</launch>
